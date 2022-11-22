@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<?xml-model
+  href="http://download.ros.org/schema/package_format3.xsd"
+  schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+
+  <name>optas_ros</name>
+  <version>1.0.0</version>
+  <description>The optas_ros package</description>
+
+  <maintainer email="christopher.mower@kcl.ac.uk">Christopher E. Mower</maintainer>
+  <license>Apache Version 2.0</license>
+  <url type="website">https://github.com/cmower/optas_ros</url>
+  <author email="christopher.mower@kcl.ac.uk">Christopher E. Mower</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>rospy</build_depend>
+  <build_export_depend>rospy</build_export_depend>
+  <exec_depend>rospy</exec_depend>
+
+</package>
