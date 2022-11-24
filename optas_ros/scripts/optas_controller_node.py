@@ -1,4 +1,5 @@
 import rospy
+from sensor_msgs.msg import JointState
 from optas_ros.node import Node
 from optas_ros.srv import ToggleController, ToggleControllerResponse
 
@@ -36,8 +37,22 @@ class ControllerNode(Node):
 
 
     def _update(self, event):
+
+        # Ensure states are all recieved from listener
+        if not self._task.state_listener.recieved_all(): return
+
+        # Reset and solve problem
         self._task.reset_problem()
-        self._task.compute_next_state()
+        target = self._task.compute_next_state()
+
+        # Pack joint state command
+        msg = JointState()
+        msg.header.stamp = rospy.Time.now()
+        msg.name = self._task.robot.actuated_joint_names
+        msg.position = target.toarray().flatten().tolist()
+
+        # Publish message to ROS
+        self._js_pub.publish(msg)
 
 def main():
     ControllerNode().spin()
