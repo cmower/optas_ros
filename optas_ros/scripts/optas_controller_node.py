@@ -1,6 +1,6 @@
 import rospy
 from optas_ros.node import Node
-from std_srvs.srv import SetBool, SetBoolResponse
+from optas_ros.srv import ToggleController, ToggleControllerResponse
 
 class ControllerNode(Node):
 
@@ -10,18 +10,37 @@ class ControllerNode(Node):
         self._js_pub = rospy.Publisher('joint_states/command', JointState, queue_size=10)
         rospy.Service('toggle', SetBool, self._srv_toggle_controller)
 
-    def controller_running(self):
+    def _controller_running(self):
         return self._timer is not None
 
     def _srv_toggle_controller(self, req):
-        pass  # todo
+
+        if (req.toggle == ToggleController.ON) and (not self._controller_running()):
+            dur = rospy.Duration(1.0/float(req.sampling_freq))
+            self._timer = rospy.Timer(dur, self._update)
+            success = True
+            message = 'started controller'
+        elif (req.toggle == ToggleController.OFF) and self._controller_running():
+            self._timer.shutdown()
+            self._timer = None
+            success = True
+            message = 'stopped controller'
+        else:
+            success = False
+            if self._controller_running():
+                message = 'tried to start controller, but it is already running'
+            else:
+                message = 'tried to stop controller, but it is not running'
+
+        return ToggleController(message=message, success=success)
+
 
     def _update(self, event):
-        self._task.reset()
+        self._task.reset_problem()
         self._task.compute_next_state()
 
 def main():
     ControllerNode().spin()
-        
+
 if __name__ == '__main__':
     main()

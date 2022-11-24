@@ -1,0 +1,15 @@
+
+# Toggle options
+int64 ON=1
+int64 OFF=2
+
+# Toggle the controller on/off
+int64 toggle
+
+# Sampling frequency to execute the controller
+int64 sampling_freq
+
+---
+
+bool success
+string message
