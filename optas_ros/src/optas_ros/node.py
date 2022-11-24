@@ -30,8 +30,16 @@ class Node:
         spec.loader.exec_module(module)
         Task = getattr(module, task_cls_name)
 
+        # Get config
+        config = None
+        if req.config_filename:
+            # TODO: load config from yaml
+            config = {}
+
         # Setup task
         self._task = Task()
+        if config is not None:
+            self._task.set_config(config)
         self._task.setup_robot()
         self._task.setup_state_listener()
         self._task.specify_problem()

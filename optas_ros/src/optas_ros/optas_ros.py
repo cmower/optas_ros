@@ -12,7 +12,10 @@ class Task(abc.ABC):
         self.builder = None
         self.optimization = None
         self.solver = None
-        self.config = rospy.get_param('~config', {})
+        self.config = None
+
+    def set_config(self, config):
+        self.config = config
 
     @abc.abstractmethod
     def setup_robot(self):

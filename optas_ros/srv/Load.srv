@@ -5,6 +5,9 @@ string user_script_filename
 # Name of class that inherits from either optas_ros.optas_ros.Controller or optas_ros.optas_ros.Planner
 string task_cls_name
 
+# Optional: filename for a YAML config file
+string config_filename
+
 ---
 
 bool success
