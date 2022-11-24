@@ -3,9 +3,22 @@ project(optas_ros)
 
 find_package(catkin REQUIRED COMPONENTS
   rospy
+  std_msgs
+  sensor_msgs
+  message_generation
 )
 
 catkin_python_setup()
+
+add_service_files(
+  FILES
+  Load.srv
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
 
 catkin_package()
 
@@ -13,7 +26,8 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-# catkin_install_python(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+catkin_install_python(PROGRAMS
+  scripts/optas_controller_node.py
+  scripts/optas_planner_node.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
