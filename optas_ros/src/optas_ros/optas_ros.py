@@ -19,7 +19,7 @@ class Task(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def reset(self):
+    def reset_problem(self):
         pass
 
 
