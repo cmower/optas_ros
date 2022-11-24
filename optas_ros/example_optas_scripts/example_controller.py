@@ -33,8 +33,8 @@ class ExampleController(Controller):
         self.builder = optas.OptimizationBuilder(T=2, robots=self.robot)
 
         # Setup parameters
-        targ = builder.add_parameter('targ', 3)
-        qc = builder.add_parameter('qc', self.robot.ndof)
+        targ = self.builder.add_parameter('targ', 3)
+        qc = self.builder.add_parameter('qc', self.robot.ndof)
 
         # Constraint: initial configuration
         self.builder.initial_configuration('initial_configuration', qc)
