@@ -1,12 +1,13 @@
 import os
 import sys
-import abc
 import rospy
+import traceback
 import importlib
+from optas_ros.srv import Load, LoadResponse
 from sensor_msgs.msg import JointState
 
 
-class Node(abc.ABC):
+class Node:
 
 
     def __init__(self, node_name):
@@ -16,7 +17,7 @@ class Node(abc.ABC):
         self._task = None
 
         # Setup service
-        rospy.Service('load', LoadTask, self._srv_load)
+        rospy.Service('load', Load, self._srv_load)
 
 
     def load(self, user_script_filename, task_cls_name):
@@ -36,8 +37,15 @@ class Node(abc.ABC):
 
 
     def _srv_load(self, req):
-        """Service that re-loads a task"""
-        self.load(req.user_script_filename, req.task_cls_name)
+        """Service that loads a task"""
+        try:
+            self.load(req.user_script_filename, req.task_cls_name)
+            message = f'loaded {req.task_cls_name} from {req.user_script_filename}'
+            success = True
+        except:
+            message = f'failed to load {req.task_cls_name} from {req.user_script_filename}\n{traceback.format_exc()}'
+            success = False
+        return LoadResponse(success=success, message=message)
 
 
     def spin(self):
