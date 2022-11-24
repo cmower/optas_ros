@@ -52,6 +52,12 @@ class ExampleController(Controller):
         pf = self.robot.get_global_link_position(qf)
         self.builder.add_cost_term('goal_target_position', optas.sumsqr(pf - targ))
 
+        # Constraint: joint velocity limit
+        max_joint_vel = self.config['max_joint_vel']
+        self.builder.add_bound_inequality_constraint(
+            'maximum_joint_velocity', -max_joint_vel, qd, max_joint_vel
+        )
+
     def setup_solver(self):
         self.solver = optas.CasADiSolver(self.optimization).setup('ipopt')
 
