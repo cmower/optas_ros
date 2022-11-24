@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import rospy
 from optas_ros.node import Node
 
