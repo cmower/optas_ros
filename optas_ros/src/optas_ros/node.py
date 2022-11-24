@@ -32,8 +32,11 @@ class Node:
 
         # Setup task
         self._task = Task()
+        self._task.setup_robot()
+        self._task.setup_state_listener()
         self._task.specify_problem()
-        self._task.specify_solver()
+        self._task.build_optimization()
+        self._task.setup_solver()
 
 
     def _srv_load(self, req):

@@ -6,13 +6,28 @@ import rospy
 class Task(abc.ABC):
 
     def __init__(self):
+        self._solution = None
         self.robot = None
         self.state_listener = None
+        self.builder = None
+        self.optimization = None
+        self.solver = None
         self.config = rospy.get_param('~config', {})
+
+    @abc.abstractmethod
+    def setup_robot(self):
+        pass
+
+    @abc.abstractmethod
+    def setup_state_listener(self):
+        pass
 
     @abc.abstractmethod
     def specify_problem(self):
         pass
+
+    def build_optimization(self):
+        self.optimization = self.builder.build()
 
     @abc.abstractmethod
     def setup_solver(self):
