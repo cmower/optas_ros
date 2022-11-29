@@ -2,28 +2,31 @@
 import rospy
 from sensor_msgs.msg import JointState
 from optas_ros.node import Node
-from optas_ros.srv import ToggleController, ToggleControllerResponse
+from optas_ros.srv import ToggleController, ToggleControllerRequest, ToggleControllerResponse
 
 class ControllerNode(Node):
 
     def __init__(self):
         super().__init__('optas_controller_node')
         self._timer = None
-        self._js_pub = rospy.Publisher('joint_states/command', JointState, queue_size=10)
-        rospy.Service('toggle', SetBool, self._srv_toggle_controller)
+        self._js_pub = None
+        rospy.Service('toggle', ToggleController, self._srv_toggle_controller)
 
     def _controller_running(self):
         return self._timer is not None
 
     def _srv_toggle_controller(self, req):
 
-        if (req.toggle == ToggleController.ON) and (not self._controller_running()):
+        if (req.toggle == ToggleControllerRequest.ON) and (not self._controller_running()):
+            self._js_pub = rospy.Publisher(req.topic, JointState, queue_size=10)
             dur = rospy.Duration(1.0/float(req.sampling_freq))
             self._timer = rospy.Timer(dur, self._update)
             success = True
             message = 'started controller'
-        elif (req.toggle == ToggleController.OFF) and self._controller_running():
+        elif (req.toggle == ToggleControllerRequest.OFF) and self._controller_running():
+            self._js_pub.unregister()
             self._timer.shutdown()
+            self._js_pub = None
             self._timer = None
             success = True
             message = 'stopped controller'
@@ -34,7 +37,7 @@ class ControllerNode(Node):
             else:
                 message = 'tried to stop controller, but it is not running'
 
-        return ToggleController(message=message, success=success)
+        return ToggleControllerResponse(message=message, success=success)
 
 
     def _update(self, event):
