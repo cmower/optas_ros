@@ -1,10 +1,33 @@
 import os
+import re
 import sys
+import yaml
+import rospkg
 import rospy
 import traceback
 import importlib
 from optas_ros.srv import Load, LoadResponse
 from sensor_msgs.msg import JointState
+
+
+def replace_package(path):
+    """Returns the absolute path to a file. The path can be given relative to ROS package in the format '{ros_package_name}/path/to/file'."""
+    rp = rospkg.RosPack()
+    matches = re.findall(r'{.+?}', path)
+    if len(matches) > 0:
+        match = matches[0]
+        package = match[1:-1]
+        root = rp.get_path(package)
+        path = path.replace(match, root)
+    return path
+
+
+def load_config(path):
+    """Load config from file."""
+    path_ = replace_package(path)
+    with open(path_, 'r') as f:
+        config = yaml.load(f, Loader=yaml.FullLoader)
+    return config
 
 
 class Node:
@@ -20,7 +43,7 @@ class Node:
         rospy.Service('load', Load, self._srv_load)
 
 
-    def load(self, user_script_filename, task_cls_name):
+    def load(self, user_script_filename, task_cls_name, config_filename):
         """Load a task from a given script"""
 
         # Load task class handle from user script
@@ -32,9 +55,8 @@ class Node:
 
         # Get config
         config = None
-        if req.config_filename:
-            # TODO: load config from yaml
-            config = {}
+        if config_filename:
+            config = load_config(config_filename)
 
         # Setup task
         self._task = Task()
@@ -50,7 +72,7 @@ class Node:
     def _srv_load(self, req):
         """Service that loads a task"""
         try:
-            self.load(req.user_script_filename, req.task_cls_name)
+            self.load(req.user_script_filename, req.task_cls_name, req.config_filename)
             message = f'loaded {req.task_cls_name} from {req.user_script_filename}'
             success = True
         except:
