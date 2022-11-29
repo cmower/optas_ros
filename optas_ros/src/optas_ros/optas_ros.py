@@ -40,6 +40,10 @@ class Task(abc.ABC):
     def reset_problem(self):
         pass
 
+    def close(self):
+        if self.state_listener is not None:
+            self.state_listener.close()
+
 
 class Controller(Task):
 

@@ -46,6 +46,9 @@ class Node:
     def load(self, user_script_filename, task_cls_name, config_filename):
         """Load a task from a given script"""
 
+        if self._task is not None:
+            self._task.close()
+
         # Load task class handle from user script
         spec = importlib.util.spec_from_file_location('user_module', user_script_filename)
         module = importlib.util.module_from_spec(spec)
