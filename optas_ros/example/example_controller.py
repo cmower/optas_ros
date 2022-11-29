@@ -21,8 +21,8 @@ class ExampleController(Controller):
     def setup_state_listener(self):
 
         states = {
-            'joints': JointStateListener(self.robot),
-            'target': PositionListener('world', 'target'),
+            'joints': JointStateListener(self.robot, topic_name='rpbi/kuka_lwr/joint_states'),
+            'target': PositionListener('rpbi/world', 'target'),
         }
 
         self.state_listener = StateListener(states=states)
@@ -37,19 +37,19 @@ class ExampleController(Controller):
         qc = self.builder.add_parameter('qc', self.robot.ndof)
 
         # Constraint: initial configuration
-        self.builder.initial_configuration('initial_configuration', qc)
+        self.builder.initial_configuration(self.robot.get_name(), qc)
 
         # Constraint: dynamics
-        self.builder.integrate_model_states('dynamics', time_deriv=1, dt=self.config['dt'])
+        self.builder.integrate_model_states(self.robot.get_name(), time_deriv=1, dt=self.config['dt'])
 
         # Cost: minimize joint velocity
-        w_mjv = 1e-2
+        w_mjv = 1e-6
         qd = self.builder.get_model_state(self.robot.get_name(), 0, time_deriv=1)
         self.builder.add_cost_term('minimize_joint_velocity', w_mjv*optas.sumsqr(qd))
 
         # Cost: goal target position
         qf = self.builder.get_model_state(self.robot.get_name(), 1)
-        pf = self.robot.get_global_link_position(qf)
+        pf = self.robot.get_global_link_position('lwr_arm_7_link', qf)
         self.builder.add_cost_term('goal_target_position', optas.sumsqr(pf - targ))
 
         # Constraint: joint velocity limit
@@ -59,7 +59,8 @@ class ExampleController(Controller):
         )
 
     def setup_solver(self):
-        self.solver = optas.CasADiSolver(self.optimization).setup('ipopt')
+        # self.solver = optas.CasADiSolver(self.optimization).setup('ipopt')
+        self.solver = optas.CasADiSolver(self.optimization).setup('sqpmethod')
 
     def reset_problem(self):
 
@@ -69,7 +70,7 @@ class ExampleController(Controller):
 
         # Reset initial seed with previous solution
         if self._solution is not None:
-            if self.solver.reset_initial_seed(self._solution)
+            self.solver.reset_initial_seed(self._solution)
         else:
             self.solver.reset_initial_seed({f'{self.robot.get_name()}/q': optas.horzcat(qc, qc)})
 
