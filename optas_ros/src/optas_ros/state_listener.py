@@ -9,6 +9,7 @@ __all__ = [
     'TopicListener',
     'JointStateListener',
     'TfListener',
+    'StateListener',
 ]
 
 
@@ -52,7 +53,7 @@ class JointStateListener(TopicListener):
         q = optas.DM.zeros(self._optas_robot_model.ndof)
         for i, name in enumerate(self._optas_robot_model.actuated_joint_names):
             idx = self._msg.name.index(name)
-            q[i] = self._msg.name.position[idx]
+            q[i] = self._msg.position[idx]
         return q
 
 
