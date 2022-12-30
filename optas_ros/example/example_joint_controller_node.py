@@ -18,7 +18,7 @@ class Node:
     vel = 0.1
 
     def __init__(self):
-        rospy.init_node('example_controller_node')
+        rospy.init_node('example_joint_controller_node')
         self.p = self.get_initial_target_position()
         self._update_dim_idx = -1
         self.tf_br = tf2_ros.TransformBroadcaster()
@@ -53,9 +53,9 @@ class Node:
         example = os.path.join(rospkg.RosPack().get_path('optas_ros'), 'example')
 
         req = LoadRequest(
-            user_script_filename=os.path.join(example, 'example_controller.py'),
-            task_cls_name='ExampleController',
-            config_filename=os.path.join(example, 'example_controller.yaml')
+            user_script_filename=os.path.join(example, 'example_joint_controller.py'),
+            task_cls_name='ExampleJointController',
+            config_filename=os.path.join(example, 'example_joint_controller.yaml')
         )
 
         rospy.wait_for_service('load', timeout=self.srv_timeout)
@@ -78,7 +78,7 @@ class Node:
 
         req = ToggleControllerRequest(
             toggle=ToggleControllerRequest.ON,
-            topic='rpbi/kuka_lwr/joint_states/target',
+            data='rpbi/kuka_lwr/joint_states/target',
             sampling_freq=500,
         )
 

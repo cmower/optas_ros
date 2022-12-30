@@ -6,8 +6,9 @@ int64 OFF=2
 # Toggle the controller on/off
 int64 toggle
 
-# Topic name for the joint states
-string topic
+# Information used to instantiate the controller. E.g. topic name for
+# the joint states.
+string data
 
 # Sampling frequency to execute the controller
 int64 sampling_freq

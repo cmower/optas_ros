@@ -10,7 +10,7 @@ class PositionListener(TfListener):
         return optas.DM([tr.x, tr.y, tr.z])
 
 
-class ExampleController(Controller):
+class ExampleJointController(Controller):
 
     def setup_robot(self):
         self.robot = optas.RobotModel(
