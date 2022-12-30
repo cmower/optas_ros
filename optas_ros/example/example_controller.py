@@ -43,14 +43,17 @@ class ExampleController(Controller):
         self.builder.integrate_model_states(self.robot.get_name(), time_deriv=1, dt=self.config['dt'])
 
         # Cost: minimize joint velocity
-        w_mjv = 1e-6
+        w_mjv = 1
         qd = self.builder.get_model_state(self.robot.get_name(), 0, time_deriv=1)
         self.builder.add_cost_term('minimize_joint_velocity', w_mjv*optas.sumsqr(qd))
 
         # Cost: goal target position
-        qf = self.builder.get_model_state(self.robot.get_name(), 1)
-        pf = self.robot.get_global_link_position('lwr_arm_7_link', qf)
-        self.builder.add_cost_term('goal_target_position', optas.sumsqr(pf - targ))
+        w_g = 1e8
+        J = self.robot.get_global_linear_jacobian('lwr_arm_7_link', qc)
+        pd = J @ qd
+        pc = self.robot.get_global_link_position('lwr_arm_7_link', qc)
+        pf = pc + self.config['dt']*pd
+        self.builder.add_cost_term('goal_target_position', w_g*optas.sumsqr(pf - targ))
 
         # Constraint: joint velocity limit
         max_joint_vel = self.config['max_joint_vel']
@@ -61,6 +64,7 @@ class ExampleController(Controller):
     def setup_solver(self):
         # self.solver = optas.CasADiSolver(self.optimization).setup('ipopt')
         self.solver = optas.CasADiSolver(self.optimization).setup('sqpmethod')
+        # self.solver = optas.OSQPSolver(self.optimization).setup(True)
 
     def reset_problem(self):
 
