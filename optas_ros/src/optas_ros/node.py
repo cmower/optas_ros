@@ -62,9 +62,7 @@ class Node:
             config = load_config(config_filename)
 
         # Setup task
-        self._task = Task()
-        if config is not None:
-            self._task.set_config(config)
+        self._task = Task(config)
         self._task.setup_robot()
         self._task.setup_state_listener()
         self._task.specify_problem()

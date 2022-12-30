@@ -5,16 +5,13 @@ import rospy
 
 class Task(abc.ABC):
 
-    def __init__(self):
+    def __init__(self, config):
         self._solution = None
         self.robot = None
         self.state_listener = None
         self.builder = None
         self.optimization = None
         self.solver = None
-        self.config = None
-
-    def set_config(self, config):
         self.config = config
 
     @abc.abstractmethod
