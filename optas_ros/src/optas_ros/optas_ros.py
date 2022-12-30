@@ -15,10 +15,6 @@ class Task(abc.ABC):
         self.config = config
 
     @abc.abstractmethod
-    def setup_robot(self):
-        pass
-
-    @abc.abstractmethod
     def setup_state_listener(self):
         pass
 

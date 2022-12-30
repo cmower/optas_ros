@@ -64,9 +64,8 @@ class Node(abc.ABC):
 
         # Setup task
         self._task = Task(config)
-        self._task.setup_robot()
-        self._task.setup_state_listener()
         self._task.specify_problem()
+        self._task.setup_state_listener()
         self._task.build_optimization()
         self._task.setup_solver()
 

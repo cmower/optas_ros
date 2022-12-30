@@ -12,22 +12,12 @@ class PositionListener(TfListener):
 
 class ExampleJointController(Controller):
 
-    def setup_robot(self):
+    def specify_problem(self):
+
         self.robot = optas.RobotModel(
             urdf_string=rospy.get_param('robot_description'),
             time_derivs=[0, 1],
         )
-
-    def setup_state_listener(self):
-
-        states = {
-            'joints': JointStateListener(self.robot, topic_name='rpbi/kuka_lwr/joint_states'),
-            'target': PositionListener('rpbi/world', 'target'),
-        }
-
-        self.state_listener = StateListener(states=states)
-
-    def specify_problem(self):
 
         # Setup builder
         self.builder = optas.OptimizationBuilder(T=2, robots=self.robot)
@@ -60,6 +50,15 @@ class ExampleJointController(Controller):
         self.builder.add_bound_inequality_constraint(
             'maximum_joint_velocity', -max_joint_vel, qd, max_joint_vel
         )
+
+    def setup_state_listener(self):
+
+        states = {
+            'joints': JointStateListener(self.robot, topic_name='rpbi/kuka_lwr/joint_states'),
+            'target': PositionListener('rpbi/world', 'target'),
+        }
+
+        self.state_listener = StateListener(states=states)
 
     def setup_solver(self):
         # self.solver = optas.CasADiSolver(self.optimization).setup('ipopt')
