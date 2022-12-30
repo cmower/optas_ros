@@ -1,0 +1,5 @@
+dt_mpc: 0.1
+T: 45
+obs_rad: 0.1
+p_rad: 0.2
+
