@@ -29,6 +29,7 @@ include_directories(
 
 catkin_install_python(PROGRAMS
   scripts/optas_joint_controller_node.py
+  scripts/optas_tf_controller_node.py
   scripts/optas_planner_node.py
   example/example_joint_controller_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
