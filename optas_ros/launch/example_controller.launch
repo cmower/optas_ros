@@ -7,6 +7,6 @@
   </node>
 
   <node pkg="optas_ros" name="controller" type="optas_controller_node.py"/>
-  <node pkg="optas_ros" name="master" type="example_controller_node.py"/>
+  <node pkg="optas_ros" name="master" type="example_controller_node.py" output="screen"/>
   
 </launch>
