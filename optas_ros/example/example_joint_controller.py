@@ -62,8 +62,9 @@ class ExampleJointController(Controller):
 
     def setup_solver(self):
         # self.solver = optas.CasADiSolver(self.optimization).setup('ipopt')
-        self.solver = optas.CasADiSolver(self.optimization).setup('sqpmethod')
-        # self.solver = optas.OSQPSolver(self.optimization).setup(True)
+        # self.solver = optas.CasADiSolver(self.optimization).setup('sqpmethod')
+        self.solver = optas.OSQPSolver(self.optimization).setup(True)
+        # self.solver = optas.CVXOPTSolver(self.optimization).setup()
 
     def reset_problem(self):
 
