@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'optas_node = optas_ros.optas_node:main'
+            'optas_controller_node = optas_ros.optas_controller_node:main',
         ],
     },
 )
