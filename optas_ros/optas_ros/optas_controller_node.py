@@ -22,7 +22,14 @@ class ControllerNode(Node):
         script = str(self.get_parameter('script').value)
         cls_name = str(self.get_parameter('class_name').value)
         self._hz = int(self.get_parameter('sampling_frequency').value)
-        self._js_type = str(self.get_parameter('joint_state_type').value)
+        js_type = str(self.get_parameter('joint_state_type').value)
+
+        set_target_handlers = {
+            'position': self.set_target_position,
+            'velocity': self.set_target_velocity,
+            'effort': self.set_target_effort,
+        }
+        self.set_target = set_target_handlers[js_type]
 
         # Setup controller
         self._controller = None
@@ -32,8 +39,18 @@ class ControllerNode(Node):
         self._joint_state_publisher = self.create_publisher(JointState, 'joint_states/target')
 
         # Setup service
+        self._msg = JointState(name=self._controller.get_joint_names())
         self._timer = None
         self.create_service(AddTwoInts, 'optas_controller/toggle', self.toggle_timer)
+
+    def set_target_position(self, position):
+        self._msg.position = position
+
+    def set_target_velocity(self, velocity):
+        self._msg.velocity = velocity
+
+    def set_target_effort(self, effort):
+        self._msg.effort = effort
 
     def toggle_timer(self, request, response):
 
@@ -77,14 +94,10 @@ class ControllerNode(Node):
         # Return when controller not ready to start
         if not self._controller.is_ready(): return
 
-        # Reset and solve problem
-        self._controller.reset()
-        self._controller.solve()
-
         # Get solution and pack/publish joint state message
-        msg = JointState(name=self._controller.get_joint_names())
-        setattr(msg, self._js_type, self._controller.get_joint_state_solution())
-        self._joint_state_publisher.publish(msg)
+        self.set_target(self._controller())
+        self._msg.header.stamp = self.get_clock().now()
+        self._joint_state_publisher.publish(self._msg)
 
 
 def main(args=None):
