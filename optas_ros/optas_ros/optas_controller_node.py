@@ -3,6 +3,7 @@ import sys
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
+from std_srvs.srv import Trigger
 
 import importlib
 
@@ -30,9 +31,30 @@ class ControllerNode(Node):
         # Setup joint state publisher
         self._joint_state_publisher = self.create_publisher(JointState, 'joint_states/target')
 
-        # Start timer
-        dt = 1./float(hz)
-        self._timer = self.create_timer(dt, self._timer_calback)
+        # Setup service
+        self._timer = None
+        self.create_service(AddTwoInts, 'optas_controller/toggle', self.toggle_timer)
+
+    def toggle_timer(self, request, response):
+
+        if self._timer is None:
+
+            # Start timer
+            dt = 1./float(self._hz)
+            self._timer = self.create_timer(dt, self._timer_calback)
+            messaged = 'started timer'
+
+        else:
+
+            # Stop timer
+            self.destroy_timer(self._timer)
+            self._timer = None
+            messaged = 'stopped timer'
+
+        response.success = True
+        response.message = message
+
+        return response
 
     def load_controller(self, script, cls_name):
 
