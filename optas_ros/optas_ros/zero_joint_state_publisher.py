@@ -19,7 +19,7 @@ class ZeroJointStatePublisher(Node):
         self.create_timer(self.dt, self._timer_callback)
 
     def _timer_callback(self):
-        self.msg.header.stamp = self.get_clock().now()
+        self.msg.header.stamp = self.get_clock().now().to_msg()
         self.pub.publish(self.msg)
 
 
