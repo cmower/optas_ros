@@ -7,7 +7,6 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-
     # Load robot description
     xacro_filename = os.path.join(
         get_package_share_directory("lbr_storz_tilt_endoscope_description"),
