@@ -41,6 +41,13 @@ def generate_launch_description():
         ],
     )
 
+    # Zero joint state
+    zero_joint_state_publisher_node = Node(
+        package="optas_ros",
+        executable="zero_joint_state_publisher_node",
+        name="zero_joint_state_publisher",
+    )
+
     # Robot state publisher
     robot_state_publisher_node = Node(
         package="robot_state_publisher",
@@ -61,5 +68,6 @@ def generate_launch_description():
             controller_node,
             robot_state_publisher_node,
             rviz_node,
+            zero_joint_state_publisher_node,
         ]
     )
