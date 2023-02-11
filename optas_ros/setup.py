@@ -24,6 +24,7 @@ setup(
     entry_points={
         "console_scripts": [
             "optas_controller_node = optas_ros.optas_controller_node:main",
+            "float64multiarray_to_joint_state_mapper_node = optas_ros.float64multiarray_to_jointstate_mapper_node:main",
             "zero_joint_state_publisher_node = optas_ros.zero_joint_state_publisher:main",
         ],
     },
